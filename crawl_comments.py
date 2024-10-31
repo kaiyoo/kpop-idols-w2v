@@ -9,7 +9,7 @@ import tqdm
 DetectorFactory.seed = 0
 
 # YouTube API key
-API_KEY = "AIzaSyCIaEpCcK8HkP08NIniHyZ_FVL2wtfvcJ8"
+API_KEY = "YOUR-API-KEY"
 
 youtube = googleapiclient.discovery.build("youtube", "v3", developerKey=API_KEY)
 VIDEO_PER_ARTIST_MAX_LIMIT = 50
@@ -26,12 +26,13 @@ def get_video_ids(query, max_results=50):
             maxResults=max_results,
             type="video"
         )
-        response = request.execute()        
-        
-        # video_ids = [item['id']['videoId'] for item in response['items'] if item['id'].get('videoId')]
-        # Add only video type, not channel, etc. 
-        video_ids = [item['id']['videoId'] for item in response['items'] if item['id']['kind'] == 'youtube#video']
-        
+        response = request.execute()
+            
+        # Only check if 'id' key exists and 'videoId' is accessible
+        for item in response['items']:
+            if isinstance(item, dict) and 'id' in item and 'videoId' in item['id']:
+                video_ids.append(item['id']['videoId'])
+                
     except HttpError as e:
         error_reason = e.resp.get('reason')
         if error_reason == 'quotaExceeded':
@@ -65,6 +66,7 @@ def get_top_korean_comments(video_id, max_results=100, top_k=COMMENTS_PER_VIDEO_
                     break
             except LangDetectException:
                 continue
+            
     except HttpError as e:
         error_reason = e.resp.get('reason')
         if error_reason == 'commentsDisabled':
@@ -123,4 +125,3 @@ for query in tqdm.tqdm(idol_list):
     print(f"{end - start}s for {query}")
     
 save_data_to_csv(video_comments)
-
