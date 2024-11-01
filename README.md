@@ -26,4 +26,14 @@ query='카리나'
 
 - Generating all vocab and tensors from FastText's pretrained model will lead to creating files over 10G.
 - Therefore, after training on youtube_comment dataset from pretrained model, I extracted only vectors of tokens in my dataset from pretrained model.
-- But for more sensible result, try generating tsv files directly from pretrained_model (bearing size issues).
+
+
+## [6] Limitation
+query='하니'
+
+![alt text](https://github.com/kaiyoo/kpop-idols-w2v/blob/main/img//하니_vector.png?raw=true)
+
+- '하니' is a member of girl group New Jeans.
+- However, '하니' is one of verb conjugations of verb '하다 (do)' at the same time, and it returned a dissapointing result this time as seen above.
+- Pretrained model (, which built new vocabulary from comments dataset) may have more general sense, but failed to catch meaningful similar vectors of '하니'.
+- Since the purpose and dataset is very focused on a specific theme, it may be better to train word embedding from scratch, not by loading from pretrained embedding from FastText.
